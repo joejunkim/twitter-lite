@@ -7,23 +7,6 @@ const { Tweet } = db;
  const { check, validationResult } = require("express-validator");
 const tweet = require("../db/models/tweet");
 
-const asyncHandler = handler => (req, res, next) => handler(req, res, next).catch(next);
-
-const handleValidationErrors = (req, res, next) => {
-    const validationErrors = validationResult(req);
-
-    if (!validationErrors.isEmpty()) {
-      const errors = validationErrors.array().map((error) => error.msg);
-
-      const err = Error("Bad request.");
-      err.errors = errors;
-      err.status = 400;
-      err.title = "Bad request.";
-      return next(err);
-    }
-    next();
-  };
-
 const validators = [
     check("message")
         .exists({checkFalsy:true})
@@ -32,8 +15,6 @@ const validators = [
         .withMessage("Your tweet can't be longer than 280 characters"),
     handleValidationErrors
 ];
-
-
 
 const tweetNotFound = (id) => {
         const err = new Error(`Tweet with the id of ${id}`)

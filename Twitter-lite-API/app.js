@@ -8,6 +8,7 @@ app.use(morgan("dev"));
 
 const indexRoutes = require("./routes/index")
 const tweetsRoutes = require("./routes/tweets")
+const usersRoutes = require("./routes/users")
 
 
 app.use(cors({ origin: "http://localhost:4000" }));
