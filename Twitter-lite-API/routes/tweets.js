@@ -1,11 +1,15 @@
 const express = require("express");
 const router = express.Router();
+const { asyncHandler, handleValidationErrors } = require('../util')
 
 const db = require("../db/models");
 const { Tweet } = db;
 
- const { check, validationResult } = require("express-validator");
+const { check, validationResult } = require("express-validator");
 const tweet = require("../db/models/tweet");
+
+const {requireAuth} = require("../auth");
+const app = require("../app");
 
 const validators = [
     check("message")
@@ -23,7 +27,9 @@ const tweetNotFound = (id) => {
         return err
 }
 
-router.get("/", asyncHandler( async(req, res, next) => {
+router.use(requireAuth)
+
+router.get("/", asyncHandler(async(req, res, next) => {
     const tweets = await Tweet.findAll()
     res.json({ tweets });
 }));
@@ -38,7 +44,7 @@ router.get("/:id(\\d+)", asyncHandler(async(req, res, next) => {
     }
 }));
 
-router.post("/", validators, (async(req, res, next) => {
+router.post("/", validators, asyncHandler(async(req, res, next) => {
     const { message } = req.body
     try {
         const tweet = await Tweet.create({message});
